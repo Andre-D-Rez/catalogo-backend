@@ -1,0 +1,19 @@
+{
+  "name": "catalogo-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "ts-node ./api/database/mongo.ts",
+    "build": "tsc -p ."
+  },
+  "dependencies": {
+    "mongoose": "^7.6.3",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
