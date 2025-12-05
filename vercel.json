@@ -1,15 +1,13 @@
 {
   "version": 2,
+  "name": "catalogo-backend",
   "builds": [
     {
-      "src": "api/server.ts",
+      "src": "api/index.ts",
       "use": "@vercel/node"
     }
   ],
   "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "api/server.ts"
-    }
+    { "src": "/(.*)", "dest": "api/index.ts" }
   ]
 }
