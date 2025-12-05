@@ -4,7 +4,7 @@ export interface IVeiculo extends Document {
   brand: string;
   type: string;
   year: number;
-  model?: string;
+  modelName?: string;
   color?: string;
   price?: number;
   imageUrl?: string;
@@ -17,7 +17,7 @@ const VeiculoSchema = new Schema<IVeiculo>(
     brand: { type: String, required: true, index: true },
     type: { type: String, required: true, index: true },
     year: { type: Number, required: true, index: true },
-    model: { type: String },
+    modelName: { type: String },
     color: { type: String },
     price: { type: Number },
     imageUrl: { type: String },
