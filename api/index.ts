@@ -30,9 +30,14 @@ app.get('/', (req, res) => {
   res.status(200).json({ message: 'Catalogo Backend API' });
 });
 
-// Connect to database (for serverless, connection happens per request)
-database.connect().catch(err => {
-  console.error('Database connection error:', err);
+// Middleware para conectar ao DB antes de processar requests
+app.use(async (req, res, next) => {
+  try {
+    await database.connect();
+    next();
+  } catch (error) {
+    res.status(500).json({ error: 'Database connection failed' });
+  }
 });
 
 export default app;

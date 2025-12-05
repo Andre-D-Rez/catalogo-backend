@@ -16,9 +16,7 @@
     "express": "^5.2.1",
     "ioredis": "^5.8.2",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^7.6.3",
-    "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "mongoose": "^7.6.3"
   },
   "devDependencies": {
     "@types/bcryptjs": "^3.0.0",
@@ -26,8 +24,6 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.11.17",
-    "@types/swagger-jsdoc": "^6.0.4",
-    "@types/swagger-ui-express": "^4.1.8",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "typescript": "^5.4.5"
