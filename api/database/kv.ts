@@ -1,5 +1,5 @@
-// @ts-ignore
-import Redis from 'ioredis';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Redis = require('ioredis');
 
 const KV_URL = process.env.KV_URL;
 const isMockMode = !KV_URL;
