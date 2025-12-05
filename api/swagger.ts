@@ -14,7 +14,7 @@ const options = {
       { url: 'http://localhost:3000' },
     ],
   },
-  apis: ['./api/routes/*.ts', './api/models/*.ts'],
+  apis: ['./api/routes/*.js', './api/models/*.js'], // Corrigido para .js
 };
 
 const swaggerSpec = swaggerJsdoc(options);
