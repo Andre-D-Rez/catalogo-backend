@@ -6,7 +6,13 @@ class AuthController {
     try {
       const { name, email, password } = req.body;
       const user = await authService.register(name, email, password);
-      const userResponse = { _id: user._id, name: user.name, email: user.email, role: user.role, createdAt: user.createdAt };
+      const userResponse = { 
+        _id: user.id, 
+        name: user.name, 
+        email: user.email, 
+        role: user.role, 
+        createdAt: (user as any).createdAt 
+      };
       return res.status(201).json(userResponse);
     } catch (error: any) {
       return res.status(400).json({ error: error.message });
@@ -17,7 +23,12 @@ class AuthController {
     try {
       const { email, password } = req.body;
       const { user, token } = await authService.login(email, password);
-      const userResponse = { _id: user._id, name: user.name, email: user.email, role: user.role };
+      const userResponse = { 
+        _id: user.id, 
+        name: user.name, 
+        email: user.email, 
+        role: user.role 
+      };
       return res.status(200).json({ user: userResponse, token });
     } catch (error: any) {
       return res.status(401).json({ error: error.message });
