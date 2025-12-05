@@ -4,7 +4,7 @@ import cors from 'cors';
 import database from './database/mongo.js';
 import veiculoRoutes from './routes/veiculo.routes.js';
 import authRoutes from './routes/auth.routes.js';
-import setupSwagger from './swagger.js';
+import setupStaticSwagger from './static-swagger.js';
 
 const app: Application = express();
 
@@ -18,7 +18,7 @@ app.use('/api/veiculos', veiculoRoutes);
 app.use('/api/auth', authRoutes);
 
 // Swagger
-setupSwagger(app);
+setupStaticSwagger(app);
 
 // Health check
 app.get('/health', (req, res) => {

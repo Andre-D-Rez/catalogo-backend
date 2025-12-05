@@ -1,0 +1,56 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Catálogo Backend API",
+    "version": "1.0.0",
+    "description": "Documentação da API do Catálogo de Veículos"
+  },
+  "paths": {
+    "/api/veiculos": {
+      "get": {
+        "summary": "Listar veículos",
+        "parameters": [
+          { "name": "brand", "in": "query", "schema": { "type": "string" } },
+          { "name": "type", "in": "query", "schema": { "type": "string" } },
+          { "name": "year", "in": "query", "schema": { "type": "integer" } },
+          { "name": "page", "in": "query", "schema": { "type": "integer" } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada de veículos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "type": "array", "items": { "$ref": "#/components/schemas/Veiculo" } },
+                    "total": { "type": "integer" },
+                    "page": { "type": "integer" },
+                    "limit": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Veiculo": {
+        "type": "object",
+        "properties": {
+          "brand": { "type": "string" },
+          "type": { "type": "string" },
+          "year": { "type": "integer" },
+          "modelName": { "type": "string" },
+          "color": { "type": "string" },
+          "price": { "type": "number" },
+          "imageUrl": { "type": "string" }
+        }
+      }
+    }
+  }
+}
