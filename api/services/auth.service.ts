@@ -25,5 +25,6 @@ class AuthService {
 
     return { user, token };
   }
+}
 
 export default new AuthService();
