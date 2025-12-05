@@ -11,6 +11,6 @@ router.delete('/:id', requireAuth, requireAdmin, controller.delete);
 
 // Rotas públicas - qualquer um pode ver
 router.get('/', controller.findAll);
-router.get('/:id', controller.getById);
+router.get('/:id', controller.findById);
 
 export default router;
