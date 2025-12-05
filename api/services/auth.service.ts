@@ -1,25 +1,13 @@
-import { UserModel } from '../models/User.js';
+import { UserModel, IUser } from '../models/User.js';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
 class AuthService {
-  async register(email: string, password: string, name: string, role: string = 'user') {
+  async register(name: string, email: string, password: string): Promise<IUser> {
     const existingUser = await UserModel.findOne({ email });
-    if (existingUser) {
-      throw new Error('Email já cadastrado');
-    }
-
-    const user = await UserModel.create({ email, password, name, role });
-    const token = this.generateToken(user._id.toString(), user.email, user.role);
-
-    return {
-      user: {
-        id: user._id,
-        email: user.email,
-        name: user.name,
-        role: user.role
-      },
-      token
-    };
+    if (existingUser) throw new Error('Email já cadastrado');
+    const hashedPassword = await bcrypt.hash(password, 10);
+    return UserModel.create({ name, email, password: hashedPassword, role: 'user' });
   }
 
   async login(email: string, password: string) {
