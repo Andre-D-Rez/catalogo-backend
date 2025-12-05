@@ -1,83 +1,83 @@
 import { VeiculoModel, IVeiculo } from '../models/Veiculo.js';
-
-export interface VeiculoFilters {
-  brand?: string;
-  type?: string;
-  year?: number;
-}
-
-export interface PaginationOptions {
-  page?: number;
-  limit?: number;
-}
-
-export interface VeiculoListResponse {
-  data: IVeiculo[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
+import kv from '../database/kv.js';
 
 class VeiculoService {
-  async create(data: Partial<IVeiculo>): Promise<IVeiculo> {
-    return VeiculoModel.create(data);
+  /**
+   * Obtém versão atual do cache (para invalidação global)
+   */
+  private async getVersion(): Promise<number> {
+    const version = await kv.get<number>('veiculos:version');
+    return version || 1;
   }
 
-  async findAll(filters: VeiculoFilters = {}, options: PaginationOptions = {}): Promise<VeiculoListResponse> {
-    // Construir query de filtros
-    const query: any = {};
-    
-    if (filters.brand) {
-      query.brand = { $regex: filters.brand, $options: 'i' }; // Case-insensitive
-    }
-    
-    if (filters.type) {
-      query.type = filters.type;
-    }
-    
-    if (filters.year) {
-      query.year = filters.year;
-    }
+  /**
+   * Incrementa versão do cache (invalida todos os caches de listagem)
+   */
+  async bumpVersion(): Promise<void> {
+    await kv.incr('veiculos:version');
+  }
 
-    // Paginação
-    const page = Math.max(1, options.page || 1);
-    const limit = Math.min(100, Math.max(1, options.limit || 10));
-    const skip = (page - 1) * limit;
+  /**
+   * Lista veículos com paginação e cache Redis
+   */
+  async findAll(filters: any): Promise<{ data: IVeiculo[]; total: number; page: number; limit: number }> {
+    const page = Math.max(1, Number(filters.page) || 1);
+    const limit = Math.max(1, Math.min(100, Number(filters.limit) || 10));
 
-    // Executar queries em paralelo
+    const query = { ...filters } as Record<string, any>;
+    delete query.page;
+    delete query.limit;
+
+    const version = await this.getVersion();
+    const key = `veiculos:v${version}:brand:${query.brand || '*'}:type:${query.type || '*'}:year:${query.year || '*'}:p${page}:l${limit}`;
+
+    const cached = await kv.get<{ data: IVeiculo[]; total: number; page: number; limit: number }>(key);
+    if (cached) return cached;
+
     const [data, total] = await Promise.all([
       VeiculoModel.find(query)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
-      VeiculoModel.countDocuments(query)
+        .skip((page - 1) * limit)
+        .limit(limit),
+      VeiculoModel.countDocuments(query),
     ]);
 
-    return {
-      data: data as IVeiculo[],
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit)
-      }
-    };
+    const result = { data, total, page, limit };
+    await kv.set(key, result, { ex: 300 }); // cache 5 minutos
+    return result;
   }
 
+  /**
+   * Cria um novo veículo e invalida cache
+   */
+  async create(data: Partial<IVeiculo>): Promise<IVeiculo> {
+    const veiculo = await VeiculoModel.create(data);
+    await this.bumpVersion();
+    return veiculo;
+  }
+
+  /**
+   * Atualiza veículo e invalida cache
+   */
+  async update(id: string, data: Partial<IVeiculo>): Promise<IVeiculo | null> {
+    const veiculo = await VeiculoModel.findByIdAndUpdate(id, data, { new: true });
+    await this.bumpVersion();
+    return veiculo;
+  }
+
+  /**
+   * Busca veículo por ID
+   */
   async findById(id: string): Promise<IVeiculo | null> {
     return VeiculoModel.findById(id);
   }
 
-  async update(id: string, data: Partial<IVeiculo>): Promise<IVeiculo | null> {
-    return VeiculoModel.findByIdAndUpdate(id, data, { new: true, runValidators: true });
-  }
-
+  /**
+   * Remove veículo e invalida cache
+   */
   async delete(id: string): Promise<IVeiculo | null> {
-    return VeiculoModel.findByIdAndDelete(id);
+    const veiculo = await VeiculoModel.findByIdAndDelete(id);
+    await this.bumpVersion();
+    return veiculo;
   }
 }
 
