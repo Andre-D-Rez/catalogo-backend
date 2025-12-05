@@ -6,7 +6,6 @@ import veiculoRoutes from './routes/veiculo.routes.js';
 import authRoutes from './routes/auth.routes.js';
 
 const app: Application = express();
-const PORT = process.env.PORT || 3000;
 
 // Middlewares
 app.use(cors());
