@@ -32,7 +32,9 @@ class VeiculoService {
     const key = `veiculos:v${version}:brand:${query.brand || '*'}:type:${query.type || '*'}:year:${query.year || '*'}:p${page}:l${limit}`;
 
     const cached = await kv.get(key);
-    if (cached) return JSON.parse(cached);
+    if (cached && typeof cached === 'object' && 'data' in cached && 'total' in cached && 'page' in cached && 'limit' in cached) {
+      return cached as { data: IVeiculo[]; total: number; page: number; limit: number };
+    }
 
     const [data, total] = await Promise.all([
       VeiculoModel.find(query)
@@ -42,7 +44,7 @@ class VeiculoService {
     ]);
 
     const result = { data, total, page, limit };
-    await kv.set(key, JSON.stringify(result), 'EX', 300); // cache 5 minutos
+    await kv.set(key, result, { ex: 300 }); // cache 5 minutos
     return result;
   }
 
