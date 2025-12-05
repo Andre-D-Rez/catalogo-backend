@@ -10,7 +10,7 @@ router.put('/:id', requireAuth, requireAdmin, controller.update);
 router.delete('/:id', requireAuth, requireAdmin, controller.delete);
 
 // Rotas públicas - qualquer um pode ver
-router.get('/', controller.getAll);
+router.get('/', controller.findAll);
 router.get('/:id', controller.getById);
 
 export default router;
