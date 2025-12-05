@@ -13,12 +13,16 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
-app.use('/api/veiculos', veiculoRoutes);
-app.use('/api/auth', authRoutes);
-
-// Swagger
-setupStaticSwagger(app);
+// Middleware para conectar ao DB antes de processar requests
+app.use(async (req, res, next) => {
+  try {
+    await database.connect();
+    next();
+  } catch (error) {
+    console.error('Database connection error:', error);
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+});
 
 // Health check
 app.get('/health', (req, res) => {
@@ -30,14 +34,17 @@ app.get('/', (req, res) => {
   res.status(200).json({ message: 'Catalogo Backend API' });
 });
 
-// Middleware para conectar ao DB antes de processar requests
-app.use(async (req, res, next) => {
-  try {
-    await database.connect();
-    next();
-  } catch (error) {
-    res.status(500).json({ error: 'Database connection failed' });
-  }
+// Routes
+app.use('/api/veiculos', veiculoRoutes);
+app.use('/api/auth', authRoutes);
+
+// Swagger
+setupStaticSwagger(app);
+
+// Error handler global
+app.use((err: any, req: any, res: any, next: any) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ error: 'Internal server error', message: err.message });
 });
 
 export default app;

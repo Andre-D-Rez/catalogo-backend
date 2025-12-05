@@ -1,3 +1,4 @@
+// @ts-ignore
 import Redis from 'ioredis';
 
 const KV_URL = process.env.KV_URL;
