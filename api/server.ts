@@ -27,9 +27,19 @@ app.get('/', (req, res) => {
   res.status(200).json({ message: 'Catalogo Backend API' });
 });
 
-// Connect to database (for serverless, connection happens per request)
-database.connect().catch(err => {
+// Connect to database (optional for development)
+try {
+  await database.connect();
+} catch (err) {
   console.error('Database connection error:', err);
+  console.warn('⚠️  Server starting without database');
+}
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`📚 API Docs: http://localhost:${PORT}/api-docs`);
+  console.log(`💊 Health check: http://localhost:${PORT}/health`);
 });
 
 export default app;

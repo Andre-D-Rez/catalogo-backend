@@ -11,7 +11,12 @@ const connect = async (): Promise<void> => {
 
   mongoose.set('strictQuery', true);
   const MONGODB_URI = process.env.MONGODB_URI;
-  if (!MONGODB_URI) throw new Error('MONGODB_URI is not defined in environment variables.');
+  
+  // MongoDB opcional - permite desenvolvimento sem banco
+  if (!MONGODB_URI) {
+    console.warn('⚠️  MongoDB not configured - database features disabled');
+    return;
+  }
   
   try {
     await mongoose.connect(MONGODB_URI, { 
@@ -20,10 +25,10 @@ const connect = async (): Promise<void> => {
       socketTimeoutMS: 45000,
     });
     isConnected = true;
-    console.log('Database connection successful');
+    console.log('✅ Database connection successful');
   } catch (error) {
-    console.error('Database connection failed:', error);
-    throw error;
+    console.error('❌ Database connection failed:', error);
+    console.warn('⚠️  Continuing without database...');
   }
 };
 
