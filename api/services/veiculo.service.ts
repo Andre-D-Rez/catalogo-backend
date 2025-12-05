@@ -6,8 +6,8 @@ class VeiculoService {
    * Obtém versão atual do cache (para invalidação global)
    */
   private async getVersion(): Promise<number> {
-    const version = await kv.get<number>('veiculos:version');
-    return version || 1;
+    const version = await kv.get('veiculos:version');
+    return version ? Number(version) : 1;
   }
 
   /**
@@ -31,8 +31,8 @@ class VeiculoService {
     const version = await this.getVersion();
     const key = `veiculos:v${version}:brand:${query.brand || '*'}:type:${query.type || '*'}:year:${query.year || '*'}:p${page}:l${limit}`;
 
-    const cached = await kv.get<{ data: IVeiculo[]; total: number; page: number; limit: number }>(key);
-    if (cached) return cached;
+    const cached = await kv.get(key);
+    if (cached) return JSON.parse(cached);
 
     const [data, total] = await Promise.all([
       VeiculoModel.find(query)
@@ -42,7 +42,7 @@ class VeiculoService {
     ]);
 
     const result = { data, total, page, limit };
-    await kv.set(key, result, { ex: 300 }); // cache 5 minutos
+    await kv.set(key, JSON.stringify(result), 'EX', 300); // cache 5 minutos
     return result;
   }
 
