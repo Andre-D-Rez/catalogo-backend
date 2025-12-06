@@ -6,14 +6,11 @@ const userAdapter = new UserRedisAdapter();
 
 class AuthService {
   async register(name: string, email: string, password: string): Promise<IUser> {
-    // Verificar se email já existe
     const existingUser = await userAdapter.findOne({ email });
     if (existingUser) throw new Error('Email já cadastrado');
 
-    // Hash da senha
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Criar novo usuário
     const user = await userAdapter.create({
       name,
       email,
