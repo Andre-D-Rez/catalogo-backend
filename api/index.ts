@@ -3,7 +3,7 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import veiculoRoutes from './routes/veiculo.routes.js';
 import authRoutes from './routes/auth.routes.js';
-import setupStaticSwagger from './static-swagger.js';
+import setupSwagger from './swagger.js';
 
 const app: Application = express();
 
@@ -27,7 +27,7 @@ app.use('/api/veiculos', veiculoRoutes);
 app.use('/api/auth', authRoutes);
 
 // Swagger
-setupStaticSwagger(app);
+setupSwagger(app);
 
 // Error handler global
 app.use((err: any, req: any, res: any, next: any) => {
