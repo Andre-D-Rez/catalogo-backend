@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import express, { Application } from 'express';
 import cors from 'cors';
-import database from './database/mongo.js';
 import veiculoRoutes from './routes/veiculo.routes.js';
 import authRoutes from './routes/auth.routes.js';
 
@@ -26,14 +25,6 @@ app.get('/health', (req, res) => {
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'Catalogo Backend API' });
 });
-
-// Connect to database (optional for development)
-try {
-  await database.connect();
-} catch (err) {
-  console.error('Database connection error:', err);
-  console.warn('⚠️  Server starting without database');
-}
 
 // Start server
 app.listen(PORT, () => {

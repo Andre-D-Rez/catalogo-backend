@@ -7,7 +7,15 @@ let kvClient: any;
 // Tenta usar Redis local primeiro (desenvolvimento)
 if (process.env.REDIS_URL) {
   console.log('✅ Using local Redis');
-  kvClient = new Redis(process.env.REDIS_URL);
+  const redis = new Redis(process.env.REDIS_URL);
+  kvClient = {
+    get: (key: string) => redis.get(key),
+    // Normaliza opções para sintaxe EX da API do Redis
+    set: (key: string, value: any, opts?: { ex?: number }) =>
+      opts?.ex ? redis.set(key, value, 'EX', opts.ex) : redis.set(key, value),
+    incr: (key: string) => redis.incr(key),
+    del: (key: string) => redis.del(key),
+  };
 }
 // Depois tenta Vercel KV (produção)
 else if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {

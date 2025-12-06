@@ -11,7 +11,7 @@ class AuthController {
         name: user.name, 
         email: user.email, 
         role: user.role, 
-        createdAt: (user as any).createdAt 
+        createdAt: user.createdAt 
       };
       return res.status(201).json(userResponse);
     } catch (error: any) {

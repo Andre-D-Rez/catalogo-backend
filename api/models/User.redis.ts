@@ -1,6 +1,6 @@
 import kv from '../database/kv.js';
 import bcrypt from 'bcryptjs';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -27,7 +27,7 @@ export class UserRedisAdapter {
    * Create a new user
    */
   async create(data: Omit<IUser, '_id' | 'id'>): Promise<IUser> {
-    const id = uuidv4();
+    const id = randomUUID();
     const user: IUser = {
       _id: id,
       id,
